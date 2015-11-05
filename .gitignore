@@ -1,0 +1,7 @@
+*.[oa]
+*~
+*.log
+*.tmp
+*.pid
+*.pyc
+*.gro
