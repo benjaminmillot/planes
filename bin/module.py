@@ -1,4 +1,5 @@
 __author__ = 'benjamin'
+__copyright__ = 'copyleft'
 __wifipass__='fk4jhr9jbg'
 
 from GromacsTrajectory import XTCTrajectory
