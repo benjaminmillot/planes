@@ -19,15 +19,9 @@ if __name__ == '__main__':
     t = structures.Md()
     t.get_top(arg.topology)
     t.get_traj(traj)
+    t.add_info_traj()
 
+    # Get informations from the two domains
     t.topology.update_domain(arg.firstdomain)
-    #t.topology.update_domain(arg.seconddomain)
+    t.topology.update_domain(arg.seconddomain)
 
-    #print t.frame[1].xyz
-
-
-    # np.take(matrix, list_of_index_to_keep, axis=0)   # pour ne traiter qu'une partie des matrices
-    # string.index('-') # pour recuperer l'index du separateur
-
-    index = range(arg.firstdomain[0],arg.firstdomain[1]+1)
-    #print t.topology.xyz[index,:]
