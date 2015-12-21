@@ -24,35 +24,92 @@ class Md(object):
                     self.topology.update_coordinates(float(field[3]),float(field[4]),float(field[5]))
                 self.topology.update_counter()
 
+class Topology(object):
+    def __init__(self):
+
+        self.residues = []
+        self.nresidues = 0
+        self.iresidues = []
+
+        self.atoms = []
+        self.natoms = 0
+        self.iatoms = []
+
+        self.xyz = np.empty(shape=(0,3))
+
+        self.domains = []
+
+    def update_top(self, residue, atom):
+
+        if not self.residues or self.residues[-1]!=residue:
+            self.residues.append(residue)
+            self.iresidues.append(int(residue[3:]))
+
+        if not self.atoms or self.atoms[-1]!=atom:
+            self.atoms.append(atom)
+            self.iatoms.append(int(atom[3:atom.index('-')]))
+
+    def update_coordinates(self,x,y,z):
+
+        self.xyz = np.vstack([self.xyz,[x,y,z]])
+
+    def update_counter(self):
+
+        self.nresidues = len(self.residues)
+        self.natoms = len(self.atoms)
+
+    def update_domain(self, domain):
+
+        d = Domain()
+
+        # Get index of residues and atoms from the start to the end of the domain
+        match_res = [i for i, x in enumerate(self.iresidues) if (x>=domain[0] and x<=domain[1])]
+        match_atom = [i for i, x in enumerate(self.iatoms) if (x>=domain[0] and x<=domain[1])]
+
+        # Fill residues fields
+        d.residues = [self.residues[i] for i in match_res]
+        d.iresidues = [self.iresidues[i] for i in match_res]
+        d.nresidues = len(d.residues)
+
+        # Fill atoms fields
+        d.atoms = [self.atoms[i] for i in match_atom]
+        d.iatoms = [self.iatoms[i] for i in match_atom]
+        d.natoms = len(d.atoms)
+
+        # Select only the coordinates of atoms between the start and the end of
+        # the domain
+        d.xyz = self.xyz[match_atom, :]
+
+        # Add to topology
+        self.domains.append(d)
+
+        # test
+        print super(Topology, self)
 
 class Frame(object):
+
     def __init__(self, coordinates, frame_counter, natoms, step, time):
+
         self.xyz = coordinates
         self.frame_counter = frame_counter
         self.natoms = natoms
         self.step = step
         self.time = time
+        self.domains = []
+
+    #def update_domain(self):
 
 
-class Topology(object):
+class Domain(object):
     def __init__(self):
-        self.residues=[]
-        self.nresidues=0
-        self.atoms=[]
-        self.natoms=0
-        self.xyz=np.empty(shape=(0,3))
 
-    def update_top(self, residue, atom):
-        if not self.residues or self.residues[-1]!=residue:
-            self.residues.append(residue)
-        if not self.atoms or self.atoms[-1]!=atom:
-            self.atoms.append(atom)
+        self.residues = []
+        self.nresidues = 0
+        self.iresidues = []
 
-    def update_coordinates(self,x,y,z):
-        self.xyz=np.vstack([self.xyz,[x,y,z]])
+        self.atoms = []
+        self.natoms = 0
+        self.iatoms = []
 
-    def update_counter(self):
-        self.nresidues=len(self.residues)
-        self.natoms=len(self.atoms)
-
+        self.xyz = np.empty(shape=(0,3))
 
