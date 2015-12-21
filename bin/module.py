@@ -20,10 +20,6 @@ if __name__ == '__main__':
     t.update_traj()
 
     # Get informations from the two domains
-    t.topology.update_domain(arg.firstdomain)
-    t.topology.update_domain(arg.seconddomain)
-
     t.get_domains(arg.firstdomain, arg.seconddomain)
-
 
 

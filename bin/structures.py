@@ -30,6 +30,8 @@ class Md(object):
             self.frame[i].update_frame(self.topology.residues, self.topology.iresidues, self.topology.atoms, self.topology.iatoms)
 
     def get_domains(self, domain_1, domain_2):
+        self.topology.update_domain(domain_1)
+        self.topology.update_domain(domain_2)
         for i in xrange(len(self.frame)):
             self.frame[i].update_domain(domain_1)
             self.frame[i].update_domain(domain_2)
@@ -97,6 +99,7 @@ class Topology(object):
 
     def update_domain(self, domain):
         self.domains.append(Md.update_domain(domain, self.residues, self.iresidues, self.atoms, self.iatoms, self.xyz))
+
 
 class Frame(object):
 
