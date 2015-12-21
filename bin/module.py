@@ -1,20 +1,21 @@
 __author__ = 'benjamin'
 __copyright__ = 'copyleft'
-__wifipass__='fk4jhr9jbg'
 
 from GromacsTrajectory import XTCTrajectory
 import structures
+import utils
 
 if __name__ == '__main__':
 
-    file_traj = "../input/traj.xtc"
-    file_top = "../input/VP1.gro"
+    # Parse the arguments
+    arg = utils.Parse()
 
-    traj = XTCTrajectory(file_traj)
+    # Read the trajectory file
+    traj = XTCTrajectory(arg.trajectory)
 
     # Creates a Md object, with informations on topology and trajectory
     t = structures.Md()
-    t.get_top(file_top)
+    t.get_top(arg.topology)
     t.get_traj(traj)
 
     print t.topology.xyz
