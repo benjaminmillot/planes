@@ -2,13 +2,16 @@ __author__ = 'benjamin'
 
 import re
 import numpy as np
+import mathops as mo
 
 class Md(object):
 
     def __init__(self):
         self.time = []
         self.frame = []
+        self.angles = []
         self.topology = Topology()
+
 
     def get_traj(self, traj):
         while traj.readStep():
@@ -32,9 +35,18 @@ class Md(object):
     def get_domains(self, domain_1, domain_2):
         self.topology.update_domain(domain_1)
         self.topology.update_domain(domain_2)
+
+        self.topology.domains[0].update_eig()
+        self.topology.domains[1].update_eig()
+
         for i in xrange(len(self.frame)):
             self.frame[i].update_domain(domain_1)
             self.frame[i].update_domain(domain_2)
+
+            self.frame[i].domains[0].update_eig()
+            self.frame[i].domains[1].update_eig()
+
+            #self.angles.append(mo.orientation(self.frame[i].domains[0].eig.eigenvectors[:,0] , self.frame[i].domains[1].eig.eigenvectors[:,0]))
 
     @staticmethod
     def update_domain(domain, residues, iresidues, atoms, iatoms, xyz):
@@ -133,6 +145,9 @@ class Frame(object):
     def update_domain(self, domain):
         self.domains.append(Md.update_domain(domain, self.residues, self.iresidues, self.atoms, self.iatoms, self.xyz))
 
+    def angle_domains(self):
+        vec = mo.orientation(self.domains[0].eig.eigenvectors[:,0], self.domain[1].eig.eigenvectors[:,0])
+
 
 class Domain(object):
     def __init__(self):
@@ -146,4 +161,23 @@ class Domain(object):
         self.iatoms = []
 
         self.xyz = np.empty(shape=(0,3))
+
+        self.eig = Eig()
+
+    def update_eig(self):
+
+        self.eig.xyz_centered = mo.centroid(self.xyz)
+        self.eig.inertia = mo.inertia(self.eig.xyz_centered)
+        self.eig.eigenvalues = mo.eigen(self.eig.inertia)[0]
+        self.eig.eigenvectors = mo.eigen(self.eig.inertia)[1]
+
+class Eig(object):
+    def __init__(self):
+        self.xyz_centered = np.empty(shape=(0,3))
+        self.inertia = np.empty(shape=(0,3))
+        self.eigenvalues = []
+        self.eigenvectors = np.empty(shape=(3,3))
+
+
+
 

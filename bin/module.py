@@ -23,3 +23,12 @@ if __name__ == '__main__':
     t.get_domains(arg.firstdomain, arg.seconddomain)
 
 
+    print t.topology.domains[1].eig.xyz_centered
+    print t.topology.domains[1].eig.inertia
+    print t.topology.domains[1].eig.eigenvalues
+    print t.topology.domains[1].eig.eigenvectors
+
+    print t.frame[156].domains[0].eig.eigenvectors
+    print t.frame[156].domains[0].eig.eigenvectors[:,0]
+
+
