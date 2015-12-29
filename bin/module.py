@@ -4,6 +4,8 @@ __copyright__ = 'copyleft'
 import structures
 import utils
 
+import numpy as np
+
 if __name__ == '__main__':
 
     # Parse the arguments
@@ -21,6 +23,20 @@ if __name__ == '__main__':
 
     # Get informations from the two domains
     t.get_domains(arg.firstdomain, arg.seconddomain)
+
+    utils.graph_angles(t.angles, xrange(len(t.frame)), 'no_msf')
+
+    # Get mean position for each atom
+    t.get_mean_pos()
+
+    t.get_msf_index()
+
+    t.update_msf_domain()
+
+    t.update_angles()
+
+    utils.graph_angles(t.angles, xrange(len(t.frame)), 'msf')
+
 
     '''
     for i in xrange(len(t.frame)):
@@ -44,4 +60,5 @@ if __name__ == '__main__':
     print t.frame[440].domains[1].xyz
     '''
 
-    t.frame[55].domains[0].plane()
+
+

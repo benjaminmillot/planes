@@ -1,4 +1,6 @@
 import argparse
+import matplotlib.pyplot as plt
+
 
 class Parse(object):
     def __init__(self):
@@ -14,3 +16,12 @@ class Parse(object):
 
         self.parser.parse_args(namespace=self)
 
+
+def graph_angles(angles, frames, name):
+
+    plt.plot(frames, angles, 'ro', markersize=1)
+    plt.title('Angle between S and P domain during the trajectory ({0})'.format(name))
+    plt.ylabel('Angle (in degrees)')
+    plt.xlabel('Step')
+    plt.savefig('../graphs/angles_{0}'.format(name))
+    plt.clf()

@@ -15,9 +15,18 @@ class Md(object):
 
     def __init__(self):
         self.time = []
-        self.frame = []
-        self.angles = []
+
         self.topology = Topology()
+        self.frame = []
+
+        self.angles = []
+
+        self.mean_d1 = None
+        self.mean_d2 = None
+
+        self.msf_d1 = []
+        self.msf_d2 = []
+
 
     def get_traj(self, file_input):
         traj = XTCTrajectory(file_input)
@@ -90,6 +99,71 @@ class Md(object):
 
         # Add to topology
         return d
+
+
+    def get_mean_pos(self):
+
+        # Create a matrix that will contain the mean position for each residue for
+        # both domains and initialize it at the first frame
+        self.mean_d1 = self.frame[0].domains[0].xyz.copy()
+        self.mean_d2 = self.frame[0].domains[1].xyz.copy()
+
+        # Add each frame to previous matrix
+        for f in xrange(1,len(self.frame)):
+            self.mean_d1 = np.add(self.mean_d1, self.frame[f].domains[0].xyz.copy())
+            self.mean_d2 = np.add(self.mean_d2, self.frame[f].domains[1].xyz.copy())
+
+        # Divide by number of frames
+        self.mean_d1 = self.mean_d1 / len(self.frame)
+        self.mean_d2 = self.mean_d2 / len(self.frame)
+
+    def get_msf_index(self):
+
+        for f in xrange(len(self.frame)):
+
+            dist_d1 = (self.mean_d1 - self.frame[f].domains[0].xyz)**2
+            dist_d1 = dist_d1.sum(axis=-1)
+            dist_d1 = np.sqrt(dist_d1)
+
+            dist_d2 = (self.mean_d2 - self.frame[f].domains[1].xyz)**2
+            dist_d2 = dist_d2.sum(axis=-1)
+            dist_d2 = np.sqrt(dist_d2)
+
+            if f == 0 :
+                d1 = np.zeros(shape=dist_d1.shape)
+                d2 = np.zeros(shape=dist_d2.shape)
+
+            d1 = np.add(d1,dist_d1)
+            d2 = np.add(d2,dist_d2)
+
+        self.msf_d1 = mo.box(d1)
+        self.msf_d2 = mo.box(d2)
+
+    def update_msf_domain(self):
+        for f in xrange(len(self.frame)):
+
+            self.frame[f].domains[0].atoms = [self.frame[f].domains[0].atoms[i] for i in self.msf_d1]
+            self.frame[f].domains[1].atoms = [self.frame[f].domains[1].atoms[i] for i in self.msf_d2]
+
+            self.frame[f].domains[0].natoms = len(self.frame[f].domains[0].atoms)
+            self.frame[f].domains[1].natoms = len(self.frame[f].domains[0].atoms)
+
+            self.frame[f].domains[0].xyz = self.frame[f].domains[0].xyz[self.msf_d1,:]
+            self.frame[f].domains[1].xyz = self.frame[f].domains[1].xyz[self.msf_d2,:]
+
+    def update_angles(self):
+
+        self.angles = []
+
+        for i in xrange(len(self.frame)):
+
+            self.frame[i].domains[0].eig = Eig()
+            self.frame[i].domains[1].eig = Eig()
+
+            self.frame[i].domains[0].update_eig()
+            self.frame[i].domains[1].update_eig()
+
+            self.angles.append(self.frame[i].calc_angle(0,1))
 
 
 class Topology(object):
@@ -167,8 +241,7 @@ class Frame(object):
 
     def calc_angle(self, i, j):
         vec = mo.orientation(self.domains[i].eig.first_eig, self.domains[j].eig.first_eig)
-        return mo.angular(self.domains[i].eig.first_eig, self.domains[j].eig.first_eig)
-
+        return mo.angular(vec, self.domains[j].eig.first_eig)
 
 
 class Domain(object):
@@ -192,12 +265,9 @@ class Domain(object):
         self.eig.inertia = mo.inertia(self.eig.xyz_centered)
         self.eig.eigenvalues = mo.eigen(self.eig.inertia)[0]
         self.eig.eigenvectors = mo.eigen(self.eig.inertia)[1]
-        self.eig.first_eig = self.eig.eigenvectors[:,0].tolist()
-
-        #print self.eig.eigenvalues, self.eig.eigenvectors
+        self.eig.first_eig = self.eig.eigenvectors[:,2].tolist()
 
     def plane(self):
-        # limites du graphe
         mn = np.min(self.xyz, axis=0)
         mx = np.max(self.xyz, axis=0)
 
@@ -226,6 +296,7 @@ class Domain(object):
         ax.axis('equal')
         ax.axis('tight')
         plt.show()
+
 
 class Eig(object):
     def __init__(self):
