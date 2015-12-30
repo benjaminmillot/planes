@@ -4,6 +4,7 @@ from GromacsTrajectory import XTCTrajectory
 import re
 import numpy as np
 import mathops as mo
+import copy as cp
 
 
 import scipy.linalg
@@ -125,6 +126,7 @@ class Md(object):
             dist_d1 = dist_d1.sum(axis=-1)
             dist_d1 = np.sqrt(dist_d1)
 
+
             dist_d2 = (self.mean_d2 - self.frame[f].domains[1].xyz)**2
             dist_d2 = dist_d2.sum(axis=-1)
             dist_d2 = np.sqrt(dist_d2)
@@ -136,8 +138,9 @@ class Md(object):
             d1 = np.add(d1,dist_d1)
             d2 = np.add(d2,dist_d2)
 
-        self.msf_d1 = mo.box(d1)
-        self.msf_d2 = mo.box(d2)
+        self.msf_d1 = cp.deepcopy(mo.box(d1))
+
+        self.msf_d2 = cp.deepcopy(mo.box(d2))
 
     def update_msf_domain(self):
         for f in xrange(len(self.frame)):
@@ -162,9 +165,13 @@ class Md(object):
 
             self.frame[i].domains[0].update_eig()
             self.frame[i].domains[1].update_eig()
+            '''
+            print self.frame[i].domains[0].eig.xyz_centered
+            print self.frame[i].domains[0].eig.inertia
+            print '---'
+            '''
 
             self.angles.append(self.frame[i].calc_angle(0,1))
-
 
 class Topology(object):
     def __init__(self):
@@ -240,9 +247,10 @@ class Frame(object):
         self.domains.append(Md.update_domain(domain, self.residues, self.iresidues, self.atoms, self.iatoms, self.xyz))
 
     def calc_angle(self, i, j):
-        vec = mo.orientation(self.domains[i].eig.first_eig, self.domains[j].eig.first_eig)
-        return mo.angular(vec, self.domains[j].eig.first_eig)
-
+        #vec = mo.orientation(self.domains[i].eig.first_eig, self.domains[j].eig.first_eig)
+        #return mo.angular(vec, self.domains[j].eig.first_eig)
+        #return mo.angular(self.domains[i].eig.first_eig, self.domains[j].eig.first_eig)
+        return mo.angular2(self.domains[i].eig.first_eig, self.domains[j].eig.first_eig)
 
 class Domain(object):
     def __init__(self):
@@ -261,10 +269,11 @@ class Domain(object):
 
     def update_eig(self):
 
-        self.eig.xyz_centered = mo.centroid(self.xyz)
+        self.eig.xyz_centered = mo.center(self.xyz)
         self.eig.inertia = mo.inertia(self.eig.xyz_centered)
         self.eig.eigenvalues = mo.eigen(self.eig.inertia)[0]
         self.eig.eigenvectors = mo.eigen(self.eig.inertia)[1]
+
         self.eig.first_eig = self.eig.eigenvectors[:,2].tolist()
 
     def plane(self):

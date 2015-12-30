@@ -4,7 +4,6 @@ __copyright__ = 'copyleft'
 import structures
 import utils
 
-import numpy as np
 
 if __name__ == '__main__':
 
@@ -24,19 +23,24 @@ if __name__ == '__main__':
     # Get informations from the two domains
     t.get_domains(arg.firstdomain, arg.seconddomain)
 
+    # Compute graphs without MSF correction
     utils.graph_angles(t.angles, xrange(len(t.frame)), 'no_msf')
 
     # Get mean position for each atom
     t.get_mean_pos()
 
+    # Computes msf
     t.get_msf_index()
 
     t.update_msf_domain()
 
     t.update_angles()
 
+    # Compute graphs with MSF correction
     utils.graph_angles(t.angles, xrange(len(t.frame)), 'msf')
 
+    for i in t.angles:
+        print i
 
     '''
     for i in xrange(len(t.frame)):
