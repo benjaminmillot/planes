@@ -4,8 +4,6 @@ __copyright__ = 'copyleft'
 import structures
 import utils
 
-import numpy as np
-
 if __name__ == '__main__':
 
     # Parse the arguments
