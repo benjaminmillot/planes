@@ -20,8 +20,17 @@ class Parse(object):
 def graph_angles(angles, frames, name):
 
     plt.plot(frames, angles, 'ro', markersize=1)
-    plt.title('Angle between S and P domain during the trajectory ({0})'.format(name))
+    plt.title('Angle between S and P domains during the trajectory ({0})'.format(name))
     plt.ylabel('Angle (in degrees)')
     plt.xlabel('Step')
     plt.savefig('../graphs/angles_{0}'.format(name))
+    plt.clf()
+
+def graph_bary_dist(bary_dist, frames, name):
+
+    plt.plot(frames, bary_dist, 'ro', markersize=1)
+    plt.title('Distance between S and P domains during the trajectory ({0})'.format(name))
+    plt.ylabel('Distance (in Angstrom)')
+    plt.xlabel('Step')
+    plt.savefig('../graphs/bary_dist_{0}'.format(name))
     plt.clf()

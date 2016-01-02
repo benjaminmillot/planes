@@ -21,6 +21,7 @@ class Md(object):
         self.frame = []
 
         self.angles = []
+        self.bary_dist = []
 
         self.mean_d1 = None
         self.mean_d2 = None
@@ -165,13 +166,22 @@ class Md(object):
 
             self.frame[i].domains[0].update_eig()
             self.frame[i].domains[1].update_eig()
-            '''
-            print self.frame[i].domains[0].eig.xyz_centered
-            print self.frame[i].domains[0].eig.inertia
-            print '---'
-            '''
 
             self.angles.append(self.frame[i].calc_angle(0,1))
+
+    def get_barycenter(self):
+
+        self.bary_dist = []
+
+        for f in xrange(len(self.frame)):
+            self.frame[f].domains[0].calc_barycenter()
+            self.frame[f].domains[1].calc_barycenter()
+
+            print self.frame[f].domains[0].barycenter, self.frame[f].domains[1].barycenter
+
+            dist = np.linalg.norm(self.frame[f].domains[0].barycenter - self.frame[f].domains[1].barycenter )
+            self.bary_dist.append(dist)
+
 
 class Topology(object):
     def __init__(self):
@@ -252,6 +262,7 @@ class Frame(object):
         #return mo.angular(self.domains[i].eig.first_eig, self.domains[j].eig.first_eig)
         return mo.angular2(self.domains[i].eig.first_eig, self.domains[j].eig.first_eig)
 
+
 class Domain(object):
     def __init__(self):
 
@@ -266,6 +277,8 @@ class Domain(object):
         self.xyz = np.empty(shape=(0,3))
 
         self.eig = Eig()
+        self.barycenter = []
+
 
     def update_eig(self):
 
@@ -275,6 +288,16 @@ class Domain(object):
         self.eig.eigenvectors = mo.eigen(self.eig.inertia)[1]
 
         self.eig.first_eig = self.eig.eigenvectors[:,2].tolist()
+
+    def calc_barycenter(self):
+
+        mw = {'ALA': 71.04, 'CYS': 103.01, 'ASP': 115.03, 'GLU': 129.04,
+              'PHE': 147.07, 'GLY': 57.02, 'HIS': 137.06, 'ILE': 113.08,
+              'LYS': 128.09, 'LEU': 113.08, 'MET': 131.04, 'ASN': 114.04,
+              'PRO': 97.05, 'GLN': 128.06, 'ARG': 156.10, 'SER': 87.03,
+              'THR': 101.05, 'VAL': 99.07, 'TRP': 186.08, 'TYR': 163.06 }
+
+        self.barycenter = mo.barycenter(mw, self.atoms, self.xyz)
 
     def plane(self):
         mn = np.min(self.xyz, axis=0)

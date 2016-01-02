@@ -4,6 +4,7 @@ __copyright__ = 'copyleft'
 import structures
 import utils
 
+import numpy as np
 
 if __name__ == '__main__':
 
@@ -23,46 +24,24 @@ if __name__ == '__main__':
     # Get informations from the two domains
     t.get_domains(arg.firstdomain, arg.seconddomain)
 
+    # Get coordinates of barycenter and computes distances during trajectory
+    t.get_barycenter()
+
     # Compute graphs without MSF correction
     utils.graph_angles(t.angles, xrange(len(t.frame)), 'no_msf')
+    utils.graph_bary_dist(t.bary_dist, xrange(len(t.frame)), 'no_msf')
 
     # Get mean position for each atom
     t.get_mean_pos()
 
-    # Computes msf
+    # Computes MSF
     t.get_msf_index()
-
     t.update_msf_domain()
-
     t.update_angles()
+
+    # Get barycenter distance with MSF correction
+    t.get_barycenter()
 
     # Compute graphs with MSF correction
     utils.graph_angles(t.angles, xrange(len(t.frame)), 'msf')
-
-    for i in t.angles:
-        print i
-
-    '''
-    for i in xrange(len(t.frame)):
-        print t.frame[i].domains[].xyz[-1]
-    '''
-
-    '''
-    print t.topology.domains[1].eig.xyz_centered
-    print t.topology.domains[1].eig.inertia
-    print t.topology.domains[1].eig.eigenvalues
-    print t.topology.domains[1].eig.eigenvectors
-    '''
-
-    '''
-    print t.frame[156].domains[0].xyz
-    print t.frame[156].domains[1].xyz
-
-    print '---------------------------'
-
-    print t.frame[440].domains[0].xyz
-    print t.frame[440].domains[1].xyz
-    '''
-
-
-
+    utils.graph_bary_dist(t.bary_dist, xrange(len(t.frame)), 'msf')
