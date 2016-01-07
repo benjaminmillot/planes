@@ -1,4 +1,8 @@
+__author__ = 'Benjamin Millot'
+__date__ = "08/01/2016"
+
 import argparse
+import sys
 import matplotlib.pyplot as plt
 
 
@@ -54,14 +58,39 @@ class Parse(object):
 
         self.parser.parse_args(namespace=self)
 
+    def commandline(self):
+        """ Print comand line to either stdout or log file
+        """
+
+        out = ''
+
+        if self.output != "stdout":
+            out = " -o {0}".format(self.output)
+
+        print "\nCommand line : module.py -top {0} -traj {1} " \
+              "-fd {2} {3} -sd {4} {5}{6}\n".format(self.topology,
+                                                    self.trajectory,
+                                                    self.firstdomain[0],
+                                                    self.firstdomain[1],
+                                                    self.seconddomain[0],
+                                                    self.seconddomain[1],
+                                                    out)
+
+    def redirect(self):
+        """ Redirect standard output to log file
+        """
+
+        if self.output != "stdout":
+            sys.stdout = open(self.output, 'w')
+
 
 def graph_angles(angles, frames, name):
     """ Create the graph of the angles between the two domains during the
         trajectory
 
-    :param angles: list of integer containing angle values
-    :param frames: list of the number of frame
-    :param name: string, specify if corrected (msf) or not (no_msf)
+        :param angles: list of integer containing angle values
+        :param frames: list of the number of frame
+        :param name: string, specify if corrected (msf) or not (no_msf)
     """
 
     plt.plot(frames, angles, 'ro', markersize=1)
@@ -85,7 +114,7 @@ def graph_bary_dist(bary_dist, frames, name):
     plt.plot(frames, bary_dist, 'ro', markersize=1)
     plt.title('Distance between S and P domains during the trajectory ({0})'.
               format(name))
-    plt.ylabel('Distance (in Angstrom)')
+    plt.ylabel('Distance (in nanometers)')
     plt.xlabel('Step')
     plt.savefig('../graphs/bary_dist_{0}'.format(name))
     plt.clf()

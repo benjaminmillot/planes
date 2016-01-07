@@ -6,3 +6,5 @@
 *.pyc
 *.xtc
 bin/.idea/
+other/
+report/

@@ -1,4 +1,5 @@
-__author__ = 'benjamin'
+__author__ = 'Benjamin Millot'
+__date__ = "08/01/2016"
 
 from GromacsTrajectory import XTCTrajectory
 import re
@@ -255,6 +256,25 @@ class Md(object):
 
             self.bary_dist.append(dist)
 
+    def print_angles(self):
+        """Print the output which overview the values of all the angles computed
+        """
+
+        print "Frame number | Angle (in degrees)"
+        print "---------------------------------"
+        for i in xrange(len(self.angles)):
+            print "Frame {0: <6} | {1}".format(i+1, self.angles[i])
+
+    def print_dist(self):
+        """Print the output which overview the values of all the distances
+           computed
+        """
+
+        print "Frame number | Distance (in nm)"
+        print "---------------------------------"
+        for i in xrange(len(self.bary_dist)):
+            print "Frame {0: <6} | {1}".format(i+1, self.bary_dist[i])
+
 
 class Topology(object):
     """ Create a topology object
@@ -490,6 +510,16 @@ class Domain(object):
               'THR': 101.05, 'VAL': 99.07, 'TRP': 186.08, 'TYR': 163.06}
 
         self.barycenter = mo.barycenter(mw, self.atoms, self.xyz)
+
+    def print_res_domain(self):
+        """Print as output the atoms taken into account for the domain
+        """
+        for i in xrange(len(self.atoms)):
+            if i % 10 == 0:
+                print
+            print "{0}{1:5}".format(self.atoms[i][0:3],
+                                    self.atoms[i][3:self.atoms[i].index('-')]),
+        print "\n"
 
 
 class Eig(object):

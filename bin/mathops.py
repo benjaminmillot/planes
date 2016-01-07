@@ -1,4 +1,5 @@
-__author__ = 'benjamin'
+__author__ = 'Benjamin Millot'
+__date__ = "08/01/2016"
 
 import numpy as np
 
@@ -72,7 +73,8 @@ def angular(v1, v2):
 
 def box(dat):
     """ Compute the Box-Whisker approach from a set of data to give the
-        quartiles. Values higher than (quartile 3)*1.5 are considered outliers.
+        quartiles. Values higher than (quartile 3)+1.5*IQR are considered
+        outliers.
         Used with MSF to deleted residues that move a lot during the trajectory
 
     :param dat: list of MSF values of each residue during trajectory
