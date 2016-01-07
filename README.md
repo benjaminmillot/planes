@@ -7,6 +7,20 @@ pour le Master M2BI de l'Université Paris Diderot.
 ## Installation
 
 Le programme a été testé fonctionnel avec la version 2.7 de Python.
+
+Le package numpy pour python doit etre installé. Veuillez vous rendre sur
+http://www.numpy.org/ pour télécharger la version correspondante a votre systeme
+d'exploitation. Sur Ubuntu, il peut etre installé par :
+
+    sudo apt-get install python-numpy
+
+Le package matplotlib de génération de graphes pour python doit etre installé.
+Veuillez vous rendre sur http://matplotlib.org/ pour télécharger la version
+correspondante a votre distribution. Sur Ubuntu, il peut etre installé en ligne
+de commande par :
+
+    sudo apt-get install python-matplotlib
+
 Le package GromacsTrajectory (Konrad Hinsen) doit être installé pour
 assurer le bon fonctionnnement du programme.
 
@@ -18,7 +32,7 @@ Veuillez vous référer au fichier README present dans le dossier si besoin.
 
 Certaines dépendances python doivent être installés et fonctionnelles, mais
 sont usuellement installées de base sur la plupart des distribution: re,
-argparse, matplotlib, numpy.
+argparse, matplotlib.
 
 ## Données d'entrée
 
@@ -32,7 +46,7 @@ S et P de la molécule A de 1IHM, constituant de la capside du Norovirus.
 Ces deux fichiers participant à un projet de recherche encore non publié à ce
 jour, et le fichier de la dynamique étant très volumineux, ils ne seront pas
 présents dans cette archive. Veuillez prendre contact avec M. Thibault Tubiana
-(thibault.tubiana@gmail.com) afin d'obtenir son authorisation et ses données.
+(thibault.tubiana@gmail.com) afin d'obtenir son autorisation et ses données.
 
 ## Lancement
 
